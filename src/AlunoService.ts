@@ -6,14 +6,14 @@ export class AlunoService {
 
     cadastrar(dados: CriarAlunoDTO): Aluno {
         
-    let verificar = this.repo.listarTodos().find(aluno => aluno.email === dados.email)
+    let verificarExistencia = this.repo.listarTodos().find(aluno => aluno.email === dados.email)
 
-    if(verificar) {
+    if(verificarExistencia) {
         throw new Error("Email ja cadastrado")
     } 
 
     const aluno: Aluno = {
-        matricula: "MAT: " + Date.now(),
+        matricula: `MAT${Date.now()}`,
         dataCadastro: new Date().toISOString(),
         ...dados
     }
@@ -21,6 +21,39 @@ export class AlunoService {
     this.repo.salvar(aluno)
 
     return aluno
+
+    }
+
+    buscarMatricula(matricula: string): Aluno {
+        let aluno = this.repo.buscarPorMatricula(matricula)
+
+        if(!aluno) {
+            throw new Error("Aluno nao encontrado")
+        }
+
+        return aluno
+    }
+
+    listarTodos(): Aluno[] {
+        let todosAlunos = this.repo.listarTodos()
+
+        return todosAlunos
+    }
+
+    atualizarSituacao(matricula: string, situacao: SituacaoAluno): Aluno {
+        let busca = this.buscarMatricula(matricula)
+
+        Object.assign( busca, {situacao} )
+
+         return busca
+    }
+
+    deletar(matricula: string): void {
+        let deletar = this.repo.deletar(matricula)
+
+        if(deletar === false) {
+            throw new Error("Aluno nao encontrado") 
+        }
 
     }
 }
