@@ -5,14 +5,15 @@ export class AlunoService {
     private repo = new Repository<Aluno>()
 
     cadastrar(dados: CriarAlunoDTO): Aluno {
-        
-    let verificarExistencia = this.repo.listarTodos().find(aluno => aluno.email === dados.email)
+        // nao permite o cadastro de dois alunos com o mesmo email 
+        let verificarExistencia = this.repo.listarTodos().find(aluno => aluno.email === dados.email)
 
-    if(verificarExistencia) {
-        throw new Error("Email ja cadastrado")
+        if(verificarExistencia) {
+            throw new Error("Email ja cadastrado")
     } 
 
     const aluno: Aluno = {
+        // A matricula é gerada automaticamente para garantir que seja unica
         matricula: `MAT${Date.now()}`,
         dataCadastro: new Date().toISOString(),
         ...dados
@@ -54,6 +55,5 @@ export class AlunoService {
         if(deletar === false) {
             throw new Error("Aluno nao encontrado") 
         }
-
     }
 }
